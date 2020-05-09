@@ -15,14 +15,14 @@ namespace MockServerTest
         [TestInitialize]
         public void TestInitialize()
         {
-            HttpHelper.Reset(MOCKURL);
+            MockServerHelper.Reset(MOCKURL);
             httpClient = new HttpClient();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            HttpHelper.Reset(MOCKURL);
+            MockServerHelper.Reset(MOCKURL);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace MockServerTest
 
             var method = "GET";
 
-            var expectation = await HttpHelper.CreateExpectationAsync(
+            var expectation = await MockServerHelper.CreateExpectationAsync(
                 MOCKURL,
                 method,
                 path,
@@ -50,7 +50,7 @@ namespace MockServerTest
             // Assert
             Assert.IsNotNull(expectation, "Expectation null");
 
-            var verify = await HttpHelper.VerifyAsync(MOCKURL, method, path);
+            var verify = await MockServerHelper.VerifyAsync(MOCKURL, method, path);
 
             Assert.IsTrue(verify, "Mock verify failure");
         }

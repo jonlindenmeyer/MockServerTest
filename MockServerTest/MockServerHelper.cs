@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace MockServerTest
 {
-    public static class HttpHelper
+    public static class MockServerHelper
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
