@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace MockServerTest
 {
-    public static class MockHttpServer
+    public static class HttpHelper
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
@@ -60,15 +60,7 @@ namespace MockServerTest
 
                 if (response.StatusCode != HttpStatusCode.Created)
                 {
-                    var builder = new StringBuilder();
-
-                    builder.AppendLine("Failed to setup expectation:");
-                    builder.Append("expectation: ");
-                    builder.AppendLine(JsonConvert.SerializeObject(expectation, JsonSerializerSettings));
-                    builder.Append("response: ");
-                    builder.AppendLine(JsonConvert.SerializeObject(response, JsonSerializerSettings));
-
-                    throw new InvalidOperationException(builder.ToString());
+                    throw new InvalidOperationException("Failed to setup expectation");
                 }
 
                 return expectation;
@@ -101,7 +93,7 @@ namespace MockServerTest
                 Body = body != null ? new { Type = "JSON", Json = JsonConvert.SerializeObject(body) } : null
             };
 
-        public static async Task<bool> Verify(string endpoint, string path, string method)
+        public static async Task<bool> VerifyAsync(string endpoint, string method, string path)
         {
             var verify = new
             {
@@ -111,7 +103,7 @@ namespace MockServerTest
 
             using (var content = new StringContent(JsonConvert.SerializeObject(verify, JsonSerializerSettings), Encoding.UTF8))
             {
-                var response = await HttpClient.PutAsync(new Uri(new Uri(endpoint), "/mockserver/verify"), content);
+                var response = await HttpClient.PutAsync(new Uri($"{endpoint}/mockserver/verify"), content);
                 return response.IsSuccessStatusCode;
             }
         }

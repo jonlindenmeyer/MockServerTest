@@ -7,22 +7,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MockServerTest
 {
     [TestClass]
-    public class MockTest
+    public class ExampleTest
     {
-        private const string MOCKURL = "http://localhost:7777/";
+        private const string MOCKURL = "http://localhost:1080/";
         private HttpClient httpClient;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            MockHttpServer.Reset(MOCKURL);
+            HttpHelper.Reset(MOCKURL);
             httpClient = new HttpClient();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            MockHttpServer.Reset(MOCKURL);
+            HttpHelper.Reset(MOCKURL);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace MockServerTest
 
             var method = "GET";
 
-            var expectation = await MockHttpServer.CreateExpectationAsync(
+            var expectation = await HttpHelper.CreateExpectationAsync(
                 MOCKURL,
                 method,
                 path,
@@ -50,7 +50,7 @@ namespace MockServerTest
             // Assert
             Assert.IsNotNull(expectation, "Expectation null");
 
-            var verify = await MockHttpServer.Verify(MOCKURL, path, method);
+            var verify = await HttpHelper.VerifyAsync(MOCKURL, method, path);
 
             Assert.IsTrue(verify, "Mock verify failure");
         }
