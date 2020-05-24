@@ -53,6 +53,10 @@ namespace MockServerTest
             var verify = await MockServerHelper.VerifyAsync(MOCKURL, method, path);
 
             Assert.IsTrue(verify, "Mock verify failure");
+
+            var verifyAll = await MockServerHelper.VerifyAllExpectations(MOCKURL);
+
+            Assert.IsTrue(verifyAll, "Mock verify all fail");
         }
     }
 }

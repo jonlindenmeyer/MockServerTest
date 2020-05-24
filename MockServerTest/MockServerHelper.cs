@@ -12,6 +12,8 @@ namespace MockServerTest
 {
     public static class MockServerHelper
     {
+        private static List<(string method, string path)> Expectations = new List<(string method, string path)>();  
+
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -25,6 +27,8 @@ namespace MockServerTest
         {
             urls.ToList()
                 .ForEach(url => HttpClient.PutAsync(new Uri($"{url}/reset"), null));
+
+            Expectations.Clear();
         }
 
         public static async Task<object> CreateExpectationAsync(
@@ -62,6 +66,8 @@ namespace MockServerTest
                 {
                     throw new InvalidOperationException("Failed to setup expectation");
                 }
+
+                Expectations.Add((method, path));
 
                 return expectation;
             }
@@ -106,6 +112,18 @@ namespace MockServerTest
                 var response = await HttpClient.PutAsync(new Uri($"{endpoint}/mockserver/verify"), content);
                 return response.IsSuccessStatusCode;
             }
+        }
+
+        public static async Task<bool> VerifyAllExpectations(string mockUrl)
+        {
+            foreach (var expectation in Expectations)
+            {
+                if (! await VerifyAsync(mockUrl, expectation.method, expectation.path))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
